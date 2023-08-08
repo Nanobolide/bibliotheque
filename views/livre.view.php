@@ -1,8 +1,16 @@
 <?php 
 
 
-ob_start() ?>
+ob_start();
 
+    if(!empty($_SESSION['alert'])) :
+ ?>
+ <div class="alert alert-<?= $_SESSION['alert']['type'] ?>" role="alert">
+    <?= $_SESSION['alert']['msg'] ?>
+ </div>
+ <?php 
+       
+    endif; ?>
 <!-- Star  -->
 
     <table class="table text-center">
@@ -22,7 +30,7 @@ ob_start() ?>
                 <td class="align-middle"><a href="<?= URL ?>livre/l/<?= $livres[$i]->getID(); ?>"><?= $livres[$i]->getTitre(); ?></a></td>
 
                 <td class="align-middle"><?=$livres[$i]->getNbPages(); ?></td>
-                <td class="align-middle"><a href="" class="btn btn-warning">Modifier</a></td>
+                <td class="align-middle"><a href="<?= URL ?>livre/m/<?= $livres[$i]->getId() ?>" class="btn btn-warning">Modifier</a></td>
                 <td class="align-middle">
                         <form action="<?= URL ?>livre/s/<?= $livres[$i]->getId() ?>" method="POST" onSubmit= "return confirm('Voulez-vous vraiment supprimer ?');"> 
                             <button class="btn btn-danger" type="submit">Supprimer</button>

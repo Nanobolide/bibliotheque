@@ -35,8 +35,8 @@ require_once "Livre.class.php";
 
                 if($this->livres[$i]->getId()  == $id){
                     return $this->livres[$i];
-
             }
+            throw new Exception("Le livre n'existe pas");
         }
      return null; 
   }
@@ -74,6 +74,31 @@ require_once "Livre.class.php";
                     unset($livre);
             
         } 
+    }
+
+
+    public function modificationLivreBD($id,$titre,$nbPages,$image){
+        $req = "
+        update biblio
+         set titre = :titre, nbPages = :nbPages, image = :image
+         where id = :id ";
+
+        $stmt= $this->getBdd()->prepare($req);
+        $stmt->bindValue(":id",$id,PDO::PARAM_INT);
+        $stmt->bindValue(":titre",$titre,PDO::PARAM_STR);
+        $stmt->bindValue(":nbPages",$nbPages,PDO::PARAM_INT);
+        $stmt->bindValue(":image",$image,PDO::PARAM_STR);
+        $resultat = $stmt->execute();
+
+        $stmt->closeCursor(); 
+
+
+        //tester si la requete a bien fonctionner
+        if ($resultat > 0) {
+                $this->getLivreById($id)->setTitre($titre);
+                $this->getLivreById($id)->setTitre($nbPages);
+                $this->getLivreById($id)->setTitre($image);
+        }
     }
 }
 

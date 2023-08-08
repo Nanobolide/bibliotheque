@@ -1,7 +1,7 @@
 <?php 
 
-       require_once "LivreManager.class.php";
-        require_once "LivreManager.php";
+    require_once "models/LivreManager.class.php";
+    require_once "models/LivreManager.php";
         
     class LivresController{
 
@@ -22,6 +22,7 @@
             
             $livres = $this->livreManager->getLivres(); //recuperation de tous les livres 
             require "views/livre.view.php";
+            unset($_SESSION['alert']);
         }
 
         public function afficherUnLivre($id){
@@ -32,6 +33,7 @@
             // echo $livre->getTitre();
         }
 
+    
         public function ajoutLivre(){
             require "views/ajoutLivre.php";
         }
@@ -41,6 +43,11 @@
             $repertoir =  "public/images/";
             $nomImageAjoute = $this->ajoutImage($file,$repertoir);
             $this->livreManager->ajoutLivreBd($_POST['titre'],$_POST['nbPages'],$nomImageAjoute);
+
+            $_SESSION['alert'] = [
+                "type"=> "success",
+                "msg" => "Livre Ajouter !!"
+            ];
             header('Location: '. URL . "livre");
         
         }
@@ -77,11 +84,39 @@
                     unlink($cheminImage);
                 }
             $this->livreManager->suppressionLivreBd($id);
+
+            $_SESSION['alert'] = [
+                "type"=> "danger",
+                "msg" => "Livre Supprimer !!"
+            ];
             header('Location: '. URL . "livre");
         }
 
+        public function modificationLivre($id){
+                $livre = $this->livreManager->getLivreById($id);
+                require "views/modifierLivre.view.php";
+        }
 
+        public function modificationLivreValidation(){
+            $imageActuelle = $this->livreManager->getLivreById($_POST['id'])->getImage();
+            $file = $_FILES['image'];
 
+            if($file['size'] > 0){ 
+                // Pour remplacer l'image
+                 unlink("public/image".$imageActuelle);
+                 $repertoir = "public/images/";
+                 $nomImageToAdd = $this->ajoutImage($file,$repertoir);
+            }else {
+                // garder l'ancien
+                $nomImageToAdd= $imageActuelle;
+            }
+            $this->livreManager->modificationLivreBD($_POST['id'],$_POST['titre'],$_POST['nbPages'],$nomImageToAdd);
+            $_SESSION['alert'] = [
+                "type"=> "success",
+                "msg" => "Livre Modifier !!"
+            ];
+            header('Location: '. URL . "livre");
+        }
 
 
 
